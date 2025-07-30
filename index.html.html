@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helsedata Tracker</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .unit {
+            color: #888;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .health-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .status-good {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #28a745;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 5px solid #ffc107;
+        }
+
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #dc3545;
+        }
+
+        .advice-section {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .advice-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .advice-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .advice-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .advice-list li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .disclaimer {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🩺 Helsedata Tracker</h1>
+        
+        <div id="healthForm">
+            <div class="form-section">
+                <h2 style="color: #333; margin-bottom: 20px;">📊 Blodverdier</h2>
+                
+                <div class="form-group">
+                    <label for="hemoglobin">Hemoglobin <span class="unit">(g/dL)</span></label>
+                    <input type="number" id="hemoglobin" step="0.1" min="0" max="25" placeholder="12.0">
+                </div>
+
+                <div class="form-group">
+                    <label for="totalCholesterol">Total kolesterol <span class="unit">(mg/dL)</span></label>
+                    <input type="number" id="totalCholesterol" step="1" min="0" max="500" placeholder="200">
+                </div>
+
+                <div class="form-group">
+                    <label for="ldlCholesterol">LDL kolesterol <span class="unit">(mg/dL)</span></label>
+                    <input type="number" id="ldlCholesterol" step="1" min="0" max="300" placeholder="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="hdlCholesterol">HDL kolesterol <span class="unit">(mg/dL)</span></label>
+                    <input type="number" id="hdlCholesterol" step="1" min="0" max="150" placeholder="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="triglycerides">Triglyserider <span class="unit">(mg/dL)</span></label>
+                    <input type="number" id="triglycerides" step="1" min="0" max="1000" placeholder="150">
+                </div>
+
+                <div class="form-group">
+                    <label for="bloodSugar">Fastende blodsukker <span class="unit">(mg/dL)</span></label>
+                    <input type="number" id="bloodSugar" step="1" min="0" max="400" placeholder="90">
+                </div>
+
+                <div class="form-group">
+                    <label for="bloodPressureSystolic">Blodtrykk systolisk <span class="unit">(mmHg)</span></label>
+                    <input type="number" id="bloodPressureSystolic" step="1" min="60" max="250" placeholder="120">
+                </div>
+
+                <div class="form-group">
+                    <label for="bloodPressureDiastolic">Blodtrykk diastolisk <span class="unit">(mmHg)</span></label>
+                    <input type="number" id="bloodPressureDiastolic" step="1" min="40" max="150" placeholder="80">
+                </div>
+            </div>
+
+            <button type="button" id="analyzeBtn" class="submit-btn">📈 Analyser helsedata</button>
+        </div>
+
+        <div id="results" class="results">
+            <h2 style="color: #333; margin-bottom: 20px;">📋 Dine resultater</h2>
+            <div id="statusContainer"></div>
+            <div id="adviceContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const healthRanges = {
+            hemoglobin: {
+                male: { low: 13.8, high: 17.2 },
+                female: { low: 12.1, high: 15.1 }
+            },
+            totalCholesterol: { low: 0, ideal: 200, high: 240 },
+            ldlCholesterol: { low: 0, ideal: 100, borderline: 130, high: 160 },
+            hdlCholesterol: { 
+                male: { low: 40, good: 60 },
+                female: { low: 50, good: 60 }
+            },
+            triglycerides: { normal: 150, borderline: 200, high: 500 },
+            bloodSugar: { normal: 100, prediabetes: 126, diabetes: 126 },
+            bloodPressure: {
+                normal: { systolic: 120, diastolic: 80 },
+                elevated: { systolic: 130, diastolic: 80 },
+                stage1: { systolic: 140, diastolic: 90 },
+                stage2: { systolic: 180, diastolic: 120 }
+            }
+        };
+
+        function analyzeHealth(data) {
+            const results = [];
+            const advice = [];
+
+            console.log('Analyzing health data:', data); // Debug
+
+            // Hemoglobin analyse
+            const hbValue = parseFloat(data.hemoglobin);
+            if (hbValue && !isNaN(hbValue)) {
+                if (hbValue < 12.1) {
+                    results.push({ type: 'danger', text: `Hemoglobin: ${hbValue} g/dL - Lavt (mulig anemi)` });
+                    advice.push('Spis jernrike matvarer som rødt kjøtt, spinat og bønner');
+                    advice.push('Vurder å ta jerntilskudd etter konsultasjon med lege');
+                } else if (hbValue > 17.2) {
+                    results.push({ type: 'warning', text: `Hemoglobin: ${hbValue} g/dL - Høyt` });
+                    advice.push('Høyt hemoglobin kan indikere dehydrering eller andre tilstander');
+                } else {
+                    results.push({ type: 'good', text: `Hemoglobin: ${hbValue} g/dL - Normalt` });
+                }
+            }
+
+            // Total kolesterol
+            const totalChol = parseFloat(data.totalCholesterol);
+            if (totalChol && !isNaN(totalChol)) {
+                if (totalChol < 200) {
+                    results.push({ type: 'good', text: `Total kolesterol: ${totalChol} mg/dL - Ønskelig` });
+                } else if (totalChol < 240) {
+                    results.push({ type: 'warning', text: `Total kolesterol: ${totalChol} mg/dL - Grensehøyt` });
+                    advice.push('Reduser inntak av mettet fett og transfett');
+                    advice.push('Øk fysisk aktivitet til minst 150 minutter per uke');
+                } else {
+                    results.push({ type: 'danger', text: `Total kolesterol: ${totalChol} mg/dL - Høyt` });
+                    advice.push('Følg et hjertevennlig kosthold med mye fiber');
+                    advice.push('Konsulter lege om eventuelle medisiner');
+                }
+            }
+
+            // LDL kolesterol
+            const ldl = parseFloat(data.ldlCholesterol);
+            if (ldl && !isNaN(ldl)) {
+                if (ldl < 100) {
+                    results.push({ type: 'good', text: `LDL kolesterol: ${ldl} mg/dL - Optimalt` });
+                } else if (ldl < 130) {
+                    results.push({ type: 'good', text: `LDL kolesterol: ${ldl} mg/dL - Nær optimalt` });
+                } else if (ldl < 160) {
+                    results.push({ type: 'warning', text: `LDL kolesterol: ${ldl} mg/dL - Grensehøyt` });
+                    advice.push('Reduser inntak av rødt kjøtt og bearbeidet mat');
+                } else {
+                    results.push({ type: 'danger', text: `LDL kolesterol: ${ldl} mg/dL - Høyt` });
+                    advice.push('Prioriter plantebaserte proteiner som bønner og nøtter');
+                }
+            }
+
+            // HDL kolesterol
+            const hdl = parseFloat(data.hdlCholesterol);
+            if (hdl && !isNaN(hdl)) {
+                if (hdl >= 60) {
+                    results.push({ type: 'good', text: `HDL kolesterol: ${hdl} mg/dL - Høyt (beskyttende)` });
+                } else if (hdl >= 40) {
+                    results.push({ type: 'warning', text: `HDL kolesterol: ${hdl} mg/dL - Grenseverdi` });
+                    advice.push('Øk kardiovaskulær trening for å heve HDL');
+                    advice.push('Spis sunt fett som olivenolje, nøtter og fet fisk');
+                } else {
+                    results.push({ type: 'danger', text: `HDL kolesterol: ${hdl} mg/dL - Lavt` });
+                    advice.push('Slutt å røyke hvis du røyker');
+                    advice.push('Øk regelmessig fysisk aktivitet');
+                }
+            }
+
+            // Triglyserider
+            const trig = parseFloat(data.triglycerides);
+            if (trig && !isNaN(trig)) {
+                if (trig < 150) {
+                    results.push({ type: 'good', text: `Triglyserider: ${trig} mg/dL - Normalt` });
+                } else if (trig < 200) {
+                    results.push({ type: 'warning', text: `Triglyserider: ${trig} mg/dL - Grensehøyt` });
+                    advice.push('Reduser inntak av sukker og raffinerte karbohydrater');
+                } else {
+                    results.push({ type: 'danger', text: `Triglyserider: ${trig} mg/dL - Høyt` });
+                    advice.push('Unngå alkohol og søte drikker');
+                    advice.push('Øk inntak av omega-3 fettsyrer fra fisk');
+                }
+            }
+
+            // Blodsukker
+            const bs = parseFloat(data.bloodSugar);
+            if (bs && !isNaN(bs)) {
+                if (bs < 100) {
+                    results.push({ type: 'good', text: `Fastende blodsukker: ${bs} mg/dL - Normalt` });
+                } else if (bs < 126) {
+                    results.push({ type: 'warning', text: `Fastende blodsukker: ${bs} mg/dL - Prediabetes` });
+                    advice.push('Spis hele kornprodukter i stedet for raffinerte');
+                    advice.push('Øk fysisk aktivitet for å forbedre insulinfølsomhet');
+                } else {
+                    results.push({ type: 'danger', text: `Fastende blodsukker: ${bs} mg/dL - Diabetisk område` });
+                    advice.push('Konsulter lege umiddelbart for diabetesbehandling');
+                    advice.push('Følg et lavt glykemisk kosthold');
+                }
+            }
+
+            // Blodtrykk
+            const systolic = parseFloat(data.bloodPressureSystolic);
+            const diastolic = parseFloat(data.bloodPressureDiastolic);
+            if (systolic && diastolic && !isNaN(systolic) && !isNaN(diastolic)) {
+                if (systolic < 120 && diastolic < 80) {
+                    results.push({ type: 'good', text: `Blodtrykk: ${systolic}/${diastolic} mmHg - Normalt` });
+                } else if (systolic < 130 && diastolic < 80) {
+                    results.push({ type: 'warning', text: `Blodtrykk: ${systolic}/${diastolic} mmHg - Forhøyet` });
+                    advice.push('Reduser saltinntak til under 2300mg per dag');
+                } else if (systolic < 140 || diastolic < 90) {
+                    results.push({ type: 'warning', text: `Blodtrykk: ${systolic}/${diastolic} mmHg - Stadium 1 hypertensjon` });
+                    advice.push('Øk kaliuminntak gjennom frukt og grønnsaker');
+                    advice.push('Praktiser stressreduserende teknikker som meditasjon');
+                } else {
+                    results.push({ type: 'danger', text: `Blodtrykk: ${systolic}/${diastolic} mmHg - Stadium 2 hypertensjon` });
+                    advice.push('Søk medisinsk behandling umiddelbart');
+                    advice.push('Følg DASH-dietten (rik på frukt, grønnsaker og fullkorn)');
+                }
+            }
+
+            // Hvis ingen data er lagt inn
+            if (results.length === 0) {
+                results.push({ type: 'warning', text: 'Ingen gyldige verdier registrert. Vennligst fyll ut minst ett felt.' });
+                advice.push('Fyll ut de blodverdiene du har tilgjengelig');
+                advice.push('Du trenger ikke fylle ut alle feltene for å få analyse');
+            }
+
+            // Generelle råd hvis verdier er gode
+            if (advice.length === 0) {
+                advice.push('Fortsett med ditt nåværende sunne livsstil');
+                advice.push('Hold deg aktiv med regelmessig trening');
+                advice.push('Spis et balansert kosthold rikt på frukt og grønnsaker');
+                advice.push('Ta regelmessige helsekontroller');
+            }
+
+            console.log('Analysis results:', { results, advice }); // Debug
+            return { results, advice };
+        }
+
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            const formData = {
+                hemoglobin: document.getElementById('hemoglobin').value,
+                totalCholesterol: document.getElementById('totalCholesterol').value,
+                ldlCholesterol: document.getElementById('ldlCholesterol').value,
+                hdlCholesterol: document.getElementById('hdlCholesterol').value,
+                triglycerides: document.getElementById('triglycerides').value,
+                bloodSugar: document.getElementById('bloodSugar').value,
+                bloodPressureSystolic: document.getElementById('bloodPressureSystolic').value,
+                bloodPressureDiastolic: document.getElementById('bloodPressureDiastolic').value
+            };
+
+            console.log('Form data:', formData); // Debug
+            const analysis = analyzeHealth(formData);
+            console.log('Analysis:', analysis); // Debug
+            displayResults(analysis);
+        });
+
+        function displayResults(analysis) {
+            const resultsDiv = document.getElementById('results');
+            const statusContainer = document.getElementById('statusContainer');
+            const adviceContainer = document.getElementById('adviceContainer');
+
+            console.log('Displaying results:', analysis); // Debug
+
+            // Vis resultater
+            statusContainer.innerHTML = '';
+            if (analysis.results && analysis.results.length > 0) {
+                analysis.results.forEach(result => {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.className = `health-status status-${result.type}`;
+                    statusDiv.textContent = result.text;
+                    statusContainer.appendChild(statusDiv);
+                });
+            }
+
+            // Vis råd
+            if (analysis.advice && analysis.advice.length > 0) {
+                adviceContainer.innerHTML = `
+                    <div class="advice-section">
+                        <div class="advice-title">💡 Personlige helseråd</div>
+                        <ul class="advice-list">
+                            ${analysis.advice.map(tip => `<li>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="disclaimer">
+                        ⚠️ <strong>Viktig:</strong> Denne informasjonen er kun til informasjonsformål og erstatter ikke profesjonell medisinsk rådgivning. 
+                        Konsulter alltid en kvalifisert helsepersonell for personlige helseråd og behandling.
+                    </div>
+                `;
+            }
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Legg til noen animasjoner ved innlasting
+        document.addEventListener('DOMContentLoaded', function() {
+            const formSections = document.querySelectorAll('.form-section');
+            formSections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
