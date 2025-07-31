@@ -199,7 +199,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🩺 Helsedata Tracker</h1>
+        <h1>🩺 Blodseriøs</h1>
         
         <div id="healthForm">
             <div class="form-section">
